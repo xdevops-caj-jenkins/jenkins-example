@@ -1,0 +1,10 @@
+pipeline {
+   agent any // Specifies that the pipeline should run on any available agent.
+   stages { // 	Defines the list of stages. 
+      stage('Hello') { // This pipeline only has one stage, named Hello.
+         steps { // Defines the list of steps to execute in the Hello stage. 
+            echo 'Hello World!' // The Hello stage only has the echo step.
+         }
+      }
+   }
+}

@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps() // print timestamp in log
+    }
+
+    tools { 
+        // https://www.jenkins.io/blog/2017/02/07/declarative-maven-project/
+        // Manage Jenkins / Global Tool Configuration
+        // Install OpenJDK 11 by default
+        // Install Maven in Global Tool Configuration
+        maven 'Maven 3.8.6' 
+    }
+
+    stages {
+
+        stage ('Initialize') {
+            steps {
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                ''' 
+            }
+        }
+      
+        // If put Jenkinsfile in the application code repository, you need comment the below "Checkout" stage
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/xdevops-caj-jenkins/simple-java-maven-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh '''
+                    mvn -B -DskipTests clean package
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+   }
+}
